@@ -137,3 +137,4 @@ add_subdirectory(shared)
 target_sources(SharedUtils PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps/src/glslang/StandAlone/ResourceLimits.cpp)
 
 add_subdirectory(Examples/01_GLFW)
+add_subdirectory(Examples/02_Triangle)

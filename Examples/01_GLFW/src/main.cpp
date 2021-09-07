@@ -58,7 +58,6 @@ void destroyWindow(GLFWwindow *window) {
 
 int main() {
 	
-
 	// We request an OpenGL 4.6 context in a 1080p window
 	GLFWwindow* window = createWindow(4, 6, GLFW_OPENGL_CORE_PROFILE, 1920, 1080, "Main window");
 	if (!window) {

@@ -20,6 +20,7 @@ Examples in this repo use the following libraries:
 
 ## Examples
 * **01_GLFW**: Creation of a GLFW window
+* **02_Triangle**: Shows how to create, compile and link shaders into a program
 
 ## Downloading dependencies
 Just run `python bootstrap.py`
