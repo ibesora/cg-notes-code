@@ -21,6 +21,8 @@ Examples in this repo use the following libraries:
 ## Examples
 * **01_GLFW**: Creation of a GLFW window
 * **02_Triangle**: Shows how to create, compile and link shaders into a program
+* **03_Maths**: Uses GLM to compute a MVP matrix to show a rotating cube
+* **04_SingleBuffer**: The same as before but using a double-sized buffer and __glBindBufferRange__ to draw each one instead of having to use multiple __glNamedBufferSubData__ calls
 
 ## Downloading dependencies
 Just run `python bootstrap.py`
