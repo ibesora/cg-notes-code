@@ -138,3 +138,4 @@ target_sources(SharedUtils PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps/src/glslang/
 
 add_subdirectory(Examples/01_GLFW)
 add_subdirectory(Examples/02_Triangle)
+add_subdirectory(Examples/03_Maths)
