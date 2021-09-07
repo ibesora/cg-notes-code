@@ -18,7 +18,8 @@ Examples in this repo use the following libraries:
 [Volk](https://github.com/zeux/volk) to load Vulkan endpoints
 [Vulkan](https://github.com/KhronosGroup/Vulkan-Headers) as the rendering backend for some examples
 
-
+## Examples
+* **01_GLFW**: Creation of a GLFW window
 
 ## Downloading dependencies
 Just run `python bootstrap.py`
