@@ -30,18 +30,20 @@ layout (std140, location=0) uniform PerFrameData {
 	uniform int padding2;
 	uniform int padding3;
 };
-layout (location=0) out vec3 color;
+layout (location=0) out vec2 uv;
 const vec3 pos[8] = vec3[8] (
 	vec3(-1.0, -1.0, 1.0), vec3(1.0, -1.0, 1.0),
 	vec3(1.0, 1.0, 1.0), vec3(-1.0, 1.0, 1.0),
 	vec3(-1.0, -1.0, -1.0), vec3(1.0, -1.0, -1.0),
 	vec3(1.0, 1.0, -1.0), vec3(-1.0, 1.0, -1.0)
 );
-const vec3 col[8] = vec3[8] (
-	vec3(1.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0),
-	vec3(0.0, 0.0, 1.0), vec3(1.0, 1.0, 0.0),
-	vec3(1.0, 1.0, 0.0), vec3(0.0, 0.0, 1.0),
-	vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0)
+const vec2 tc[6] = vec2[6](
+	vec2( 0.0, 0.0 ),
+	vec2( 1.0, 0.0 ),
+	vec2( 1.0, 1.0 ),
+	vec2( 1.0, 1.0 ),
+	vec2( 0.0, 1.0 ),
+	vec2( 0.0, 0.0 )
 );
 const int indices[36] = int[36] (
 	// front
@@ -60,15 +62,16 @@ const int indices[36] = int[36] (
 void main() {
 	int index = indices[gl_VertexID];
 	gl_Position = MVP * vec4(pos[index], 1.0);
-	color = isWireframe > 0 ? vec3(1.0) : col[index];
+	uv = tc[gl_VertexID % 6];
 }
 )";
 static const char* fragmentShaderCode = R"(
 #version 460 core
-layout (location=0) in vec3 color;
+layout (location=0) in vec2 uv;
 layout (location=0) out vec4 out_FragColor;
+uniform sampler2D texture0;
 void main() {
-	out_FragColor = vec4(color, 1.0);
+	out_FragColor = texture(texture0, uv);
 }
 )";
 
@@ -84,10 +87,12 @@ GLuint createProgram(GLuint, GLuint);
 GLuint createShader(const GLchar* const*, unsigned int);
 GLuint createBuffer();
 void configureGL(GLFWwindow*);
+void loadTexture();
 void renderLoop(GLFWwindow*, GLuint);
 float resizeWindow(GLFWwindow*);
 void clear(GLFWwindow*);
 void setup();
+GLuint loadImage(GLuint, const char*, GLuint, GLuint);
 void draw(GLFWwindow*, GLuint, GLsizeiptr, const float);
 void destroyWindow(GLFWwindow*);
 void destroyResources(GLuint, GLuint, GLuint, GLuint, GLuint);
@@ -117,6 +122,7 @@ int main() {
 	GLuint fsId = createShader(&fragmentShaderCode, GL_FRAGMENT_SHADER);
 	GLuint programId = createProgram(vsId, fsId);
 	GLuint perFrameDataBuffer = createBuffer();
+	loadTexture();
 	renderLoop(window, perFrameDataBuffer);
 	destroyResources(vaoId, vsId, fsId, programId, perFrameDataBuffer);
 	destroyWindow(window);
@@ -277,6 +283,27 @@ void setup() {
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	// We use the polygon offset to render a wireframe on top of the solid image without z-fighting
 	glPolygonOffset(-1.0f, -1.0f);
+
+}
+
+void loadTexture() {
+	GLuint texture = loadImage(0, "data/ch2_sample3_STB.jpg", GL_LINEAR, GL_LINEAR);
+	glBindTextures(0, 1, &texture);
+}
+
+GLuint loadImage(GLuint bindLocation, const char *path, GLuint minFilter, GLuint maxFilter) {
+	int w, h, comp;
+	const uint8_t* img = stbi_load(path, &w, &h, &comp, 3);
+	GLuint texture;
+	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+	glTextureParameteri(texture, GL_TEXTURE_MAX_LEVEL, 0);
+	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, maxFilter);
+	glTextureStorage2D(texture, 1, GL_RGB8, w, h);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTextureSubImage2D(texture, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, img);
+	stbi_image_free((void*)img);
+	return texture;
 }
 
 void draw(GLFWwindow* window, GLuint perFrameDataBuffer, GLsizeiptr kBufferSize, const float ratio) {
