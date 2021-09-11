@@ -23,6 +23,7 @@ Examples in this repo use the following libraries:
 * **02_Triangle**: Shows how to create, compile and link shaders into a program
 * **03_Maths**: Uses GLM to compute a MVP matrix to show a rotating cube
 * **04_SingleBuffer**: The same as before but using a double-sized buffer and __glBindBufferRange__ to draw each one instead of having to use multiple __glNamedBufferSubData__ calls
+* **05_STB**: Shows how to read and write image files to use them as textures and save screenshots using the STB library
 
 ## Downloading dependencies
 Just run `python bootstrap.py`
